@@ -9,6 +9,8 @@ import com.example.keyboardshortcut.customextensions.showToast
 import com.example.keyboardshortcut.databinding.ActivityMainBinding
 import com.example.keyboardshortcut.model.ShortCut
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), View.OnClickListener {
@@ -39,14 +41,18 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     fun saveKey()
     {
-        if(TextUtils.isEmpty(activityMainBinding.mainContainer.textView.text))
-        {
-            showToast("Please Enter show Keys")
-        }
-        else
-        {
-            val shortcut = ShortCut(activityMainBinding.mainContainer.etshortcutkeyname.text.toString(),keys)
-            println(shortcut)
+        when {
+            TextUtils.isEmpty(activityMainBinding.mainContainer.etshortcutkeyname.text) -> showToast("Please Enter ShortCut Name")
+            TextUtils.isEmpty(activityMainBinding.mainContainer.textView.text) -> showToast("Please Add Keys")
+            else -> {
+                val shortcut = ShortCut(activityMainBinding.mainContainer.etshortcutkeyname.text.toString(),keys)
+                keys = ArrayList<String>()
+                activityMainBinding.mainContainer.textView.text = null
+                activityMainBinding.mainContainer.etshortcutkeyname.text = null
+                val  firebaseDatabase = FirebaseDatabase.getInstance()
+                val databaseReference = firebaseDatabase.reference
+                databaseReference.child("root").push().setValue(shortcut)
+            }
         }
     }
     lateinit var activityMainBinding: ActivityMainBinding
