@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "682196395499",
+    "firebase_url": "https://keyboardshortcut-4b418.firebaseio.com",
+    "project_id": "keyboardshortcut-4b418",
+    "storage_bucket": "keyboardshortcut-4b418.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682196395499:android:f22791b52f290dd9",
+        "android_client_info": {
+          "package_name": "com.example.keyboardshortcut"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682196395499-q6ipepd8f67ejrql6otev0tektiu6jau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVnPJgmKuNrZDXGFYkGrNV39eQaIjffgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682196395499-q6ipepd8f67ejrql6otev0tektiu6jau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
