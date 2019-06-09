@@ -1,18 +1,25 @@
 package com.example.keyboardshortcut
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import com.example.keyboardshortcut.customextensions.showToast
 import com.example.keyboardshortcut.databinding.ActivityMainBinding
 import com.example.keyboardshortcut.model.ShortCut
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), View.OnClickListener {
@@ -38,17 +45,15 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     }
 
     fun setDataBaseChangeListener() {
-       val firebaseDatabase= FirebaseDatabase.getInstance()
+        val firebaseDatabase = FirebaseDatabase.getInstance()
         val databaseReference = firebaseDatabase.getReference()
-        val valueEventListener = object:ValueEventListener
-        {
+        val valueEventListener = object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
             }
 
             override fun onDataChange(p0: DataSnapshot) {
                 val childs = p0.children
-                for(child in childs)
-                {
+                for (child in childs) {
                     val shortCut = child.getValue<ShortCut>(ShortCut::class.java)
                     showToast(shortCut.toString())
                 }
@@ -57,8 +62,41 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         databaseReference.child("root").addValueEventListener(valueEventListener)
 
 
+    }
+
+    fun isOreo() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
+    fun createNotificationChannel() {
+        val notificationChannel =
+            NotificationChannel("NOTIFICATION_CHANNEL_ID", "Shortcuts", NotificationManager.IMPORTANCE_DEFAULT)
+        notificationChannel.description = "Descriptions of ShortCuts"
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.createNotificationChannel(notificationChannel)
 
     }
+
+    fun showSimpleNotification() {
+        val notificationCompatBuilder = androidx.core.app.NotificationCompat.Builder(this, "NOTIFICATION_CHANNEL_ID")
+        notificationCompatBuilder.setContentTitle("Notification Sample")
+        notificationCompatBuilder.setSmallIcon(R.drawable.ic_add)
+        notificationCompatBuilder.setContentText("hello Notification")
+        if(isPie())
+        {
+            val imageDecoderSource = ImageDecoder.createSource(resources,R.drawable.ic_add)
+            val bitmap = ImageDecoder.decodeBitmap(imageDecoderSource)
+            notificationCompatBuilder.setStyle(NotificationCompat.BigPictureStyle().bigLargeIcon(bitmap))
+        }
+        else
+        {
+            val bitmap = BitmapFactory.decodeResource(resources,R.drawable.notify)
+            notificationCompatBuilder.setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
+        }
+        val notificationManagerCompat = NotificationManagerCompat.from(this)
+        notificationManagerCompat.notify(1, notificationCompatBuilder.build())
+    }
+
+    fun isPie() = Build.VERSION.SDK_INT==Build.VERSION_CODES.P
+
 
     fun saveKey() {
         when {
@@ -85,10 +123,13 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            showSimpleNotification()
         }
         setDataBaseChangeListener()
+        if (isOreo()) {
+            createNotificationChannel()
+
+        }
     }
 
 }
